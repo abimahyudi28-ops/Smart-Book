@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBuku - Akuntansi Otomatis AI</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Icon set -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fa-solid fa-book-open"></i> SmartBuku
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li class="active"><a href="#" id="nav-dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="#" id="nav-transaction"><i class="fa-solid fa-plus-circle"></i> Catat Transaksi</a></li>
+                <li><a href="#" id="nav-history"><i class="fa-solid fa-list"></i> Riwayat Transaksi</a></li>
+                <li><a href="#" id="nav-debt"><i class="fa-solid fa-hand-holding-dollar"></i> Utang & Piutang</a></li>
+                <li class="section-title">Laporan</li>
+                <li><a href="#" id="nav-journal"><i class="fa-solid fa-book"></i> Jurnal Umum</a></li>
+                <li><a href="#" id="nav-trial-balance"><i class="fa-solid fa-scale-balanced"></i> Neraca Saldo</a></li>
+                <li><a href="#" id="nav-profit-loss"><i class="fa-solid fa-chart-line"></i> Laba Rugi</a></li>
+                <li class="section-title">AI Assistant</li>
+                <li><a href="#" id="nav-chat"><i class="fa-solid fa-robot"></i> Tanya Keuangan</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <h2>Beranda</h2>
+                <div class="user-profile">
+                    <span>Toko Makmur Jaya</span>
+                    <div class="avatar">MJ</div>
+                </div>
+            </header>
+
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="view-section active">
+                <div class="summary-cards">
+                    <div class="card">
+                        <div class="card-title">SALDO SAAT INI</div>
+                        <div class="card-value" id="saldo-saat-ini">Rp 25.500.000</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">PENDAPATAN BULAN INI</div>
+                        <div class="card-value text-success" id="total-pendapatan">Rp 15.000.000</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">PENGELUARAN BULAN INI</div>
+                        <div class="card-value text-danger" id="total-pengeluaran">Rp 8.500.000</div>
+                    </div>
+                    <div class="card highlight">
+                        <div class="card-title">LABA BERSIH</div>
+                        <div class="card-value" id="laba-bersih">Rp 6.500.000</div>
+                    </div>
+                </div>
+
+                <div class="recent-transactions">
+                    <h3>Transaksi Terbaru</h3>
+                    <div class="table-responsive">
+                        <table id="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Keterangan</th>
+                                    <th>Nominal</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-list">
+                                <!-- Data diisi oleh JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction Input View -->
+            <div id="view-transaction" class="view-section" style="display: none;">
+                <div class="transaction-container">
+                    <div class="ai-input-section">
+                        <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Catat Transaksi dengan AI</h3>
+                        <p class="subtitle">Ceritakan transaksi Anda dengan bahasa sehari-hari. AI akan otomatis menentukan pencatatannya.</p>
+                        
+                        <div class="input-group">
+                            <label>Tanggal</label>
+                            <input type="date" id="input-date" value="2026-08-17">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Pilihan Cepat Utang/Piutang (Klik untuk mengisi):</label>
+                            <div class="quick-chips" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                                <button type="button" class="btn-chip" onclick="fillPrompt('Beli pupuk secara utang Rp2.000.000', 'Kredit')"><i class="fa-solid fa-cart-shopping text-danger"></i> Utang Baru (Beli Kredit)</button>
+                                <button type="button" class="btn-chip" onclick="fillPrompt('Bayar utang ke supplier Rp1.000.000', 'Tunai')"><i class="fa-solid fa-money-bill-wave text-success"></i> Bayar Utang</button>
+                                <button type="button" class="btn-chip" onclick="fillPrompt('Jual barang ke Budi secara kredit/piutang Rp1.500.000', 'Kredit')"><i class="fa-solid fa-hand-holding-dollar text-primary"></i> Piutang Baru (Jual Kredit)</button>
+                                <button type="button" class="btn-chip" onclick="fillPrompt('Terima pembayaran piutang dari Budi Rp500.000', 'Tunai')"><i class="fa-solid fa-cash-register text-success"></i> Terima Piutang</button>
+                            </div>
+                            <label>Atau ketik bebas bahasa Anda:</label>
+                            <textarea id="input-description" placeholder="Contoh: Beli pupuk utang 2jt, atau Terima piutang Budi 500rb" rows="3"></textarea>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Metode Pembayaran</label>
+                            <select id="input-method">
+                                <option value="Tunai">Tunai / Kas</option>
+                                <option value="Bank">Transfer Bank</option>
+                                <option value="Kredit">Kredit / Utang</option>
+                            </select>
+                        </div>
+
+                        <button id="btn-analyze" class="btn-primary">
+                            <i class="fa-solid fa-robot"></i> Analisis Transaksi
+                        </button>
+                    </div>
+
+                    <!-- AI Analysis Result Modal / Section -->
+                    <div id="ai-result-section" class="ai-result-section" style="display: none;">
+                        <div class="result-header">
+                            <h4>Hasil Analisis Cerdas</h4>
+                            <span class="badge success"><i class="fa-solid fa-check"></i> Seimbang</span>
+                        </div>
+                        
+                        <div class="analysis-summary">
+                            <p><strong>Keterangan Terbaca:</strong> <span id="res-desc">Pembelian pupuk</span></p>
+                            <p><strong>Jenis Transaksi:</strong> <span id="res-type">Pembelian Persediaan (Tunai)</span></p>
+                        </div>
+
+                        <div class="journal-preview">
+                            <div class="journal-row header">
+                                <div>Akun</div>
+                                <div>Debit</div>
+                                <div>Kredit</div>
+                            </div>
+                            <div class="journal-row">
+                                <div id="res-debit-acc">Persediaan Pupuk</div>
+                                <div id="res-debit-amt">Rp 2.000.000</div>
+                                <div>-</div>
+                            </div>
+                            <div class="journal-row">
+                                <div id="res-credit-acc">Kas</div>
+                                <div>-</div>
+                                <div id="res-credit-amt">Rp 2.000.000</div>
+                            </div>
+                            <div class="journal-row total">
+                                <div>Total</div>
+                                <div id="res-total-debit">Rp 2.000.000</div>
+                                <div id="res-total-credit">Rp 2.000.000</div>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button id="btn-save" class="btn-primary success"><i class="fa-solid fa-check"></i> Benar, Simpan Transaksi</button>
+                            <button id="btn-correct" class="btn-secondary"><i class="fa-solid fa-pen"></i> Koreksi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Missing Sections Placeholders -->
+            <div id="view-history" class="view-section" style="display: none;">
+                <h3>Riwayat Transaksi Lengkap</h3>
+                <p class="subtitle">Semua transaksi bisnis Anda tercatat di sini.</p>
+                <div class="recent-transactions mt-4">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Keterangan</th>
+                                    <th>Nominal</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-list">
+                                <!-- Data diisi oleh JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-debt" class="view-section" style="display: none;">
+                <h3>Manajemen Utang & Piutang</h3>
+                <p class="subtitle">Pantau siapa yang berutang pada Anda dan utang Anda kepada pihak lain.</p>
+                <div class="summary-cards" style="margin-top: 2rem;">
+                    <div class="card" style="border-left: 4px solid var(--danger);">
+                        <div class="card-title">TOTAL UTANG (YANG HARUS DIBAYAR)</div>
+                        <div class="card-value text-danger" id="debt-total">Rp 0</div>
+                    </div>
+                    <div class="card" style="border-left: 4px solid var(--secondary);">
+                        <div class="card-title">TOTAL PIUTANG (YANG AKAN DITERIMA)</div>
+                        <div class="card-value text-success" id="receivable-total">Rp 0</div>
+                    </div>
+                </div>
+                <div class="ai-input-section" style="text-align: center; margin-top: 2rem;" id="debt-status-msg">
+                    <i class="fa-solid fa-face-smile" style="font-size: 3rem; color: var(--secondary); margin-bottom: 1rem;"></i>
+                    <h4>Bagus! Saat ini Anda tidak memiliki tanggungan utang/piutang yang belum lunas.</h4>
+                </div>
+            </div>
+
+            <div id="view-journal" class="view-section" style="display: none;">
+                <h3>Jurnal Umum Otomatis</h3>
+                <p class="subtitle">Sistem mencatat Debit dan Kredit secara otomatis dari bahasa sehari-hari Anda.</p>
+                <div class="recent-transactions mt-4">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Akun</th>
+                                    <th>Ref</th>
+                                    <th>Debit</th>
+                                    <th>Kredit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="journal-list">
+                                <!-- Data jurnal mock -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-trial-balance" class="view-section" style="display: none;">
+                <h3>Neraca Saldo</h3>
+                <p class="subtitle">Laporan keseimbangan seluruh akun.</p>
+                <div class="ai-result-section" style="display: block;">
+                    <div class="result-header">
+                        <h4>Periode: Saat Ini</h4>
+                        <span class="badge success" id="tb-status"><i class="fa-solid fa-check"></i> SEIMBANG</span>
+                    </div>
+                    <div class="journal-preview">
+                        <div class="journal-row header">
+                            <div>Nama Akun</div>
+                            <div>Debit</div>
+                            <div>Kredit</div>
+                        </div>
+                        <div id="tb-list">
+                            <!-- Data neraca saldo diisi oleh JS -->
+                        </div>
+                        <div class="journal-row total">
+                            <div>Total Keseluruhan</div>
+                            <div id="tb-total-debit">Rp 0</div>
+                            <div id="tb-total-credit">Rp 0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-profit-loss" class="view-section" style="display: none;">
+                <h3>Laporan Laba Rugi</h3>
+                <p class="subtitle">Performa bisnis Anda.</p>
+                <div class="ai-input-section" style="max-width: 600px;">
+                    <h4 style="border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem;">Pendapatan</h4>
+                    <div id="pl-revenue-list">
+                        <!-- Data pendapatan diisi oleh JS -->
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 2rem;"><span>Total Pendapatan</span><span class="text-success" id="pl-total-revenue">Rp 0</span></div>
+                    
+                    <h4 style="border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem;">Beban & Pengeluaran</h4>
+                    <div id="pl-expense-list">
+                        <!-- Data beban diisi oleh JS -->
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 2rem;"><span>Total Beban</span><span class="text-danger" id="pl-total-expense">Rp 0</span></div>
+                    
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; border-top: 2px solid var(--primary); padding-top: 1rem; color: var(--primary);">
+                        <span>LABA BERSIH</span>
+                        <span id="pl-net-profit">Rp 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-chat" class="view-section" style="display: none;">
+                <h3><i class="fa-solid fa-robot" style="color: var(--primary);"></i> Tanya Keuangan AI</h3>
+                <p class="subtitle">Tanyakan apapun soal keuangan Anda dengan bahasa sehari-hari. AI membaca data usaha Anda secara real-time.</p>
+
+                <div class="quick-chips" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <button type="button" class="btn-chip" onclick="askChatSample('Berapa uang tunai / kas saya sekarang?')">💵 Berapa uang saya?</button>
+                    <button type="button" class="btn-chip" onclick="askChatSample('Apakah bisnis saya sedang untung atau rugi?')">📈 Apakah saya untung?</button>
+                    <button type="button" class="btn-chip" onclick="askChatSample('Berapa total utang yang belum dibayar?')">🔴 Berapa utang saya?</button>
+                    <button type="button" class="btn-chip" onclick="askChatSample('Berapa total piutang pelanggan?')">🟢 Siapa yang punya piutang?</button>
+                    <button type="button" class="btn-chip" onclick="askChatSample('Pengeluaran terbesar saya apa?')">💸 Beban terbesar?</button>
+                    <button type="button" class="btn-chip" onclick="askChatSample('Berikan saran untuk keuangan bisnis saya')">💡 Beri saran keuangan</button>
+                </div>
+                
+                <div style="background: var(--surface-card); border: 1px solid var(--border); border-radius: 20px; height: 430px; display: flex; flex-direction: column; box-shadow: var(--card-shadow); overflow: hidden;">
+                    <div id="chat-messages" style="flex: 1; padding: 1.5rem; overflow-y: auto; background: rgba(248, 250, 252, 0.6);">
+                        <div style="margin-bottom: 1rem; display: flex; gap: 1rem;">
+                            <div class="avatar" style="background: var(--primary-gradient); width: 34px; height: 34px; flex-shrink: 0;"><i class="fa-solid fa-robot"></i></div>
+                            <div style="background: white; padding: 1rem 1.25rem; border-radius: 0 18px 18px 18px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(15,23,42,0.03); max-width: 80%;">
+                                Halo! Saya **SmartAI Keuangan**. Tanya apapun tentang uang kas, laba rugi, utang, piutang, atau minta saran keuangan bisnis Anda! ✨
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 1rem 1.25rem; border-top: 1px solid var(--border); display: flex; gap: 0.75rem; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);">
+                        <input type="text" id="chat-input" placeholder="Ketik pertanyaan Anda di sini..." style="flex: 1; margin: 0;">
+                        <button id="chat-send" class="btn-primary" style="width: auto; padding: 0 1.5rem; border-radius: 14px;"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
